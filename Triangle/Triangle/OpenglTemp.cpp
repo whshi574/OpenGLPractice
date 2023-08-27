@@ -148,10 +148,9 @@ void rend()
 
 	glBindVertexArray(VAO);
 	//glBindTexture(GL_TEXTURE_2D, _texture);
+	_shader.start();
 
 	matrixProj = glm::perspective(glm::radians(45.0f), static_cast<float>(Window_width / Window_height), 0.1f, 100.0f);
-
-	_shader.start();
 
 	_shader.SetMatrix("ViewMatrix", matrixView);
 	_shader.SetMatrix("ProjMatrix", matrixProj);
@@ -166,12 +165,11 @@ void rend()
 
 		_shader.SetMatrix("ModelMatrix", matrixModel);
 
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
-
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
-	
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 
 	_shader.end();
 }
