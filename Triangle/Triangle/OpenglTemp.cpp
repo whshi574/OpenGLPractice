@@ -1,6 +1,7 @@
 ﻿#include "Base.h"
 #include "Shader.h"
 #include "ffimage.h"
+#include "Camera.h"
 
 //About the window
 
@@ -24,11 +25,12 @@ float NowTime = glfwGetTime();
 ffImage* _pimage;
 
 //Camera set up
+Camera _camera;
 glm::mat4 matrixProj = glm::mat4(1.0f);
 glm::vec3 cameraPosition(0.0f, 0.0f, 3.0f);  // 相机位置
 glm::vec3 cameraTarget(0.0f, 0.0f, 0.0f);   // 目标位置
-glm::vec3 upVector(0.0f, 1.0f, 0.0f);       // 上向量
-glm::mat4 matrixView = glm::lookAt(cameraPosition, cameraTarget, upVector);
+glm::vec3 cameraUp(0.0f, 0.1f, 0.0f);
+
 
 //Model matrix
 glm::mat4 matrixModel = glm::mat4(1.0f);
@@ -55,7 +57,11 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		
+		_camera.Move(MOVEFORWARD);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		_camera.Move(MOVEBACK);
 	}
 }
 
@@ -152,7 +158,7 @@ void rend()
 
 	matrixProj = glm::perspective(glm::radians(45.0f), static_cast<float>(Window_width / Window_height), 0.1f, 100.0f);
 
-	_shader.SetMatrix("ViewMatrix", matrixView);
+	_shader.SetMatrix("ViewMatrix", _camera.GetViewMatrix());
 	_shader.SetMatrix("ProjMatrix", matrixProj);
 
 	for (int i = 0; i < LocVectorsSize; i++)
@@ -208,6 +214,8 @@ int main(void)
 
 	glViewport(0, 0, Window_width, Window_height);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	_camera.LookAt(cameraPosition, cameraTarget - cameraPosition, cameraUp);
 
 	initTexture();
 	initMode();
