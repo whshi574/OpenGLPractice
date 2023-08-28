@@ -73,6 +73,11 @@ void processInput(GLFWwindow* window)
 	}
 }
 
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	_camera.onMouseMove(xpos, ypos);
+}
+
 void initMode() 
 {
 	//Model Vertices
@@ -218,7 +223,8 @@ int main(void)
 		return -1;
 	}
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, cursor_position_callback);
 
 	glViewport(0, 0, Window_width, Window_height);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);

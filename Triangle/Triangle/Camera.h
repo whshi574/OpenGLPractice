@@ -38,10 +38,10 @@ public:
 	void Move(Camera_Move _MoveType);
 	void SetSpeed(float _speed);
 
-	/*void Pitch();
-	void Yaw();
+	void AddPitch(double _xoffset);
+	void AddYaw(double _yoffset);
 	void SetSensitivity(float _s);
 
-	void onMouseMove(double _xpos, double _ypos);*/
+	void onMouseMove(double _xpos, double _ypos);
 };
 

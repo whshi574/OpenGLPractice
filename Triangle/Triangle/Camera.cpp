@@ -5,8 +5,17 @@ Camera::Camera()
 	Position = glm::vec3(1.0f);
 	FrontVector = glm::vec3(1.0f);
 	UpVector = glm::vec3(1.0f);
+
 	ViewMatrix = glm::mat4(1.0f);
-	MoveSpeed = 0.01f;
+	MoveSpeed = 0.08f;
+
+	IsFirstMove = true;
+	RotateSensitivity = 0.1f;
+	Pitch = 0.0f;
+	Yaw = -90.0f;
+
+	xpos = 0.0f;
+	ypos = 0.0f;
 }
 
 Camera::~Camera()
@@ -59,4 +68,64 @@ void Camera::Move(Camera_Move _MoveType)
 void Camera::SetSpeed(float _speed)
 {
 	MoveSpeed = _speed;
+}
+
+void Camera::AddPitch(double _yoffset)
+{
+	Pitch += _yoffset * RotateSensitivity;
+
+	if (Pitch >= 89.0f)
+	{
+		Pitch = 89.0f;
+	}
+
+	if (Pitch <= -89.0f)
+	{
+		Pitch = -89.0f;
+	}
+
+	FrontVector.y = sin(glm::radians(Pitch));
+	FrontVector.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+	FrontVector.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+
+	FrontVector = glm::normalize(FrontVector);
+
+	Update();
+}
+
+void Camera::AddYaw(double _xoffset)
+{
+	Yaw += _xoffset * RotateSensitivity;
+
+	FrontVector.y = sin(glm::radians(Pitch));
+	FrontVector.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+	FrontVector.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+
+	FrontVector = glm::normalize(FrontVector);
+	Update();
+}
+
+void Camera::SetSensitivity(float _s)
+{
+	RotateSensitivity = _s;
+}
+
+void Camera::onMouseMove(double _xpos, double _ypos)
+{
+	if (IsFirstMove) 
+	{
+		IsFirstMove = false;
+		xpos = _xpos;
+		ypos = _ypos;
+		return;
+	}
+
+	double xoffset = _xpos - xpos;
+	double yoffset = -(_ypos - ypos);
+
+	xpos = _xpos;
+	ypos = _ypos;
+
+	AddPitch(yoffset);
+	AddYaw(xoffset);
 }
