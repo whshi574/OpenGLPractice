@@ -18,7 +18,7 @@ void Camera::LookAt(glm::vec3 _Position, glm::vec3 _Front, glm::vec3 _Up)
 {
 	Position = _Position;
 	FrontVector = glm::normalize(_Front);
-	UpVector = _Up;//? do not normalize?
+	UpVector = glm::normalize(_Up);//? do not normalize?
 
 	ViewMatrix = glm::lookAt(Position, Position + FrontVector, UpVector);
 }
@@ -46,8 +46,12 @@ void Camera::Move(Camera_Move _MoveType)
 		Update();
 		break;
 	case MOVERIGHT:
+		Position = Position + glm::cross(FrontVector, UpVector) * MoveSpeed;
+		Update();
 		break;
 	case MOVELEFT:
+		Position = Position - glm::cross(FrontVector, UpVector) * MoveSpeed;
+		Update();
 		break;
 	}
 }

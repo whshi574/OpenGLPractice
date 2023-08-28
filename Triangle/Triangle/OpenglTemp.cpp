@@ -29,7 +29,7 @@ Camera _camera;
 glm::mat4 matrixProj = glm::mat4(1.0f);
 glm::vec3 cameraPosition(0.0f, 0.0f, 3.0f);  // 相机位置
 glm::vec3 cameraTarget(0.0f, 0.0f, 0.0f);   // 目标位置
-glm::vec3 cameraUp(0.0f, 0.1f, 0.0f);
+glm::vec3 cameraUp(0.0f, 0.1f, 0.0f); //相机的向上向量
 
 
 //Model matrix
@@ -62,6 +62,14 @@ void processInput(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		_camera.Move(MOVEBACK);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		_camera.Move(MOVELEFT);
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		_camera.Move(MOVERIGHT);
 	}
 }
 
