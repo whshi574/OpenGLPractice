@@ -198,7 +198,7 @@ int main(void)
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//Get Texture image
 	_pimage = ffImage::readFromFile("Res/Grass.jpg");
@@ -208,18 +208,21 @@ int main(void)
 	int Window_height = 400;
 	int Window_width = Pic_Ratio * Window_height;
 
-	GLFWwindow* window = glfwCreateWindow(Window_width, Window_height, "OpenGL Core", NULL, NULL);
-	if (window == NULL)
+	GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);;
+
+	if (!window)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
+		std::cout << "Failed to create GLFW window, Create window again" << std::endl;
 		return -1;
 	}
+	
+
 	glfwMakeContextCurrent(window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		std::cout << "" << std::endl;
 		return -1;
 	}
 

@@ -123,6 +123,9 @@ void Camera::onMouseMove(double _xpos, double _ypos)
 	double xoffset = _xpos - xpos;
 	double yoffset = -(_ypos - ypos);
 
+	std::cout << "Xoffset:" << xoffset << std::endl;
+	std::cout << "Yoffset:" << yoffset << std::endl;
+
 	xpos = _xpos;
 	ypos = _ypos;
 
