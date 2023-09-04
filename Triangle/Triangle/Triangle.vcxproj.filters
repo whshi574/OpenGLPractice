@@ -41,6 +41,12 @@
     <None Include="vertexShader.glsl">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="VertexSunShader.glsl">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="FragSunShader.glsl">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

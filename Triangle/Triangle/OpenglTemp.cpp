@@ -9,13 +9,14 @@ int Window_width = 1200;
 int Window_height = 600;
 
 //Shader buffer
-unsigned int VBO = 0;
-unsigned int VAO = 0;
-unsigned int EBO = 0;
+unsigned int VAO_Cube = 0;
+unsigned int VAO_Sun = 0;
+
 unsigned int _texture = 0;
 
 //Shader program
-Shader _shader;
+Shader _shaderCube;
+Shader _shaderSun;
 GLint FragColorLoc;
 
 //Now program time
@@ -78,7 +79,7 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 	_camera.onMouseMove(xpos, ypos);
 }
 
-void initMode() 
+unsigned int initMode()
 {
 	//Model Vertices
 	float vertices[] = {
@@ -125,16 +126,16 @@ void initMode()
 		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
+	unsigned int _VAO = 0;
+	unsigned int _VBO = 0;
 
+	glGenVertexArrays(1, &_VAO);
+	glBindVertexArray(_VAO);
 
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glGenBuffers(1, &_VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(VBO);
+	glEnableVertexAttribArray(_VBO);
 	
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, 5 * sizeof(float), 0);
 	glVertexAttribPointer(2, 2, GL_FLOAT, false, 5 * sizeof(float), (void*)(sizeof(float) * 3));
@@ -144,6 +145,8 @@ void initMode()
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	return _VAO;
 }
 
 void initTexture() 
@@ -165,32 +168,43 @@ void rend()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBindVertexArray(VAO);
 	//glBindTexture(GL_TEXTURE_2D, _texture);
-	_shader.start();
+	_shaderCube.start();
+
+	glBindVertexArray(VAO_Cube);
 
 	matrixProj = glm::perspective(glm::radians(45.0f), static_cast<float>(Window_width / Window_height), 0.1f, 100.0f);
 
-	_shader.SetMatrix("ViewMatrix", _camera.GetViewMatrix());
-	_shader.SetMatrix("ProjMatrix", matrixProj);
+	_shaderCube.SetMatrix("ViewMatrix", _camera.GetViewMatrix());
+	_shaderCube.SetMatrix("ProjMatrix", matrixProj);
 
-	for (int i = 0; i < LocVectorsSize; i++)
-	{
-		matrixModel = glm::mat4(1.0f);
+	matrixModel = glm::mat4(1.0f);
+	matrixModel = glm::translate(matrixModel, LocVectors[0]);
 
-		//先旋转，在平移，虽然这里是先平移在旋转，但是glm库矩阵操作都是贴给右边，所以最后贴的是最先计算的
-		matrixModel = glm::translate(matrixModel, LocVectors[i]);
-		matrixModel = glm::rotate(matrixModel, (float)glfwGetTime() * glm::radians(10.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+	_shaderCube.SetMatrix("ModelMatrix", matrixModel);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		_shader.SetMatrix("ModelMatrix", matrixModel);
+	glBindVertexArray(0);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-	}
+	_shaderCube.end();
 
+	
+	//_shaderSun.start();
+
+	glBindVertexArray(VAO_Sun);
+
+	matrixModel = glm::mat4(1.0f);
+	matrixModel = glm::translate(matrixModel, LocVectors[1]);
+
+	_shaderCube.SetMatrix("ModelMatrix", matrixModel);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+	glBindVertexArray(0);
+
+	//_shaderSun.end();
+	
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-
-	_shader.end();
 }
 
 int main(void)
@@ -201,7 +215,7 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//Get Texture image
-	_pimage = ffImage::readFromFile("Res/Grass.jpg");
+	_pimage = ffImage::readFromFile("../Triangle/Res/Grass.jpg");
 	float Pic_Ratio = _pimage->GetPicRatio();
 
 	//About the window
@@ -235,8 +249,11 @@ int main(void)
 	_camera.LookAt(cameraPosition, cameraTarget - cameraPosition, cameraUp);
 
 	initTexture();
-	initMode();
-	_shader.initShader("vertexShader.glsl", "fragmentShader.glsl");
+	VAO_Cube = initMode();
+	VAO_Sun = initMode();
+
+	_shaderCube.initShader("vertexShader.glsl", "fragmentShader.glsl");
+	_shaderSun.initShader("VertexSunShader.glsl", "FragSunShader.glsl");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -244,8 +261,7 @@ int main(void)
 		processInput(window);
 
         /* Render here */
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		rend();
 
