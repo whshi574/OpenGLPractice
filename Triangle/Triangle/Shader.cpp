@@ -108,3 +108,8 @@ void Shader::SetMatrix(const GLchar* matrixName, glm::mat4 matrixData)
 {
 	glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, matrixName), 1, GL_FALSE, glm::value_ptr(matrixData));
 }
+
+void Shader::SetVecFour(const GLchar* vecName, glm::vec4 vectorValue)
+{
+	glUniform4fv(glGetUniformLocation(m_shaderProgram, vecName), 4, glm::value_ptr(vectorValue));
+}

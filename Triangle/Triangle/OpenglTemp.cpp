@@ -40,11 +40,16 @@ glm::mat4 matrixModel = glm::mat4(1.0f);
 int const LocVectorsSize = 5;
 glm::vec3 LocVectors[LocVectorsSize] = {
 	glm::vec3(0.0f, 0.0f, 0.0f),
-	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3(-1.8f, -2.0f, -1.3f),
 	glm::vec3(-1.7f,  3.0f, -7.5f),
 	glm::vec3(1.5f,  2.0f, -2.5f),
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 };
+
+//Light config
+glm::vec3 LightPos = glm::vec3(2.5f, 1.4f, 2.2f);
+glm::vec4 LightColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -178,6 +183,8 @@ void rend()
 	_shaderCube.SetMatrix("ViewMatrix", _camera.GetViewMatrix());
 	_shaderCube.SetMatrix("ProjMatrix", matrixProj);
 
+	_shaderCube.SetVecFour("LightColor", LightColor);
+
 	matrixModel = glm::mat4(1.0f);
 	matrixModel = glm::translate(matrixModel, LocVectors[0]);
 
@@ -189,19 +196,27 @@ void rend()
 	_shaderCube.end();
 
 	
-	//_shaderSun.start();
+	_shaderSun.start();
 
 	glBindVertexArray(VAO_Sun);
 
 	matrixModel = glm::mat4(1.0f);
-	matrixModel = glm::translate(matrixModel, LocVectors[1]);
+	matrixModel = glm::translate(matrixModel, LightPos);
+	matrixModel = glm::rotate
 
-	_shaderCube.SetMatrix("ModelMatrix", matrixModel);
+	matrixProj = glm::perspective(glm::radians(45.0f), static_cast<float>(Window_width / Window_height), 0.1f, 100.0f);
+
+	_shaderSun.SetMatrix("ViewMatrix", _camera.GetViewMatrix());
+	_shaderSun.SetMatrix("ProjMatrix", matrixProj);
+
+	_shaderSun.SetVecFour("LightColor", LightColor);
+
+	_shaderSun.SetMatrix("ModelMatrix", matrixModel);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	glBindVertexArray(0);
 
-	//_shaderSun.end();
+	_shaderSun.end();
 	
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -222,7 +237,7 @@ int main(void)
 	int Window_height = 400;
 	int Window_width = Pic_Ratio * Window_height;
 
-	GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);;
+	GLFWwindow* window = glfwCreateWindow(Window_width, Window_height, "Hello World", NULL, NULL);
 
 	if (!window)
 	{

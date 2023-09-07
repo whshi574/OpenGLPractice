@@ -25,4 +25,6 @@ public:
 
 	void SetMatrix(const GLchar* matrixName, glm::mat4 matrixData);
 
+	void SetVecFour(const GLchar* matrixName, glm::vec4 vectorValue);
+
 };
